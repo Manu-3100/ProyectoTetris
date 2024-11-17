@@ -1,0 +1,16 @@
+{
+  "name": "proyecto-tetris",
+  "version": "0.0.1",
+  "description": "Tetris Game",
+  "main": "main.js",
+  "eslintConfig": {
+  "extends": [ "standard" ]},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Manu3100",
+  "license": "ISC",
+  "dependencies": {
+    "nodemon": "^3.1.7"
+  }
+}
