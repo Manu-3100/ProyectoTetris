@@ -6,17 +6,7 @@ const TAMAÑOBLOQUE = 20
 const FILAS = 30
 const COLUMNAS = 16
 
-const PIEZAS = [
-    [1, 1],
-    [1, 1]
-]
-
-let piezaActual = {
-    shape: PIEZAS[0],
-    position: { x: 7, y: 0 },
-}
-
-const TABLERO = [
+const tablero = [
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -46,78 +36,177 @@ const TABLERO = [
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 ];
 
 canvas.height = FILAS * TAMAÑOBLOQUE;
 canvas.width = COLUMNAS * TAMAÑOBLOQUE;
 context.scale(TAMAÑOBLOQUE, TAMAÑOBLOQUE);
 
-setInterval(draw, 1000)
-// setInterval(caerPieza, 1000)
+const PIEZAS = [
+    [ // cuadrado
+        [1, 1],
+        [1, 1]
+    ],
+    [
+        [0, 0, 1, 0],
+        [0, 0, 1, 0],
+        [0, 0, 1, 0],
+        [0, 0, 1, 0]
+    ], // linea
 
-function draw() {
+    [ // Z
+        [1, 1, 0],
+        [0, 1, 1],
+        [0, 0, 0]
+    ],
+
+    [ // s
+        [0, 1, 1],
+        [1, 1, 0],
+        [0, 0, 0]
+    ],
+
+    [ // L
+        [0, 1, 0],
+        [0, 1, 0],
+        [0, 1, 1]
+    ],
+
+    [ // flecha
+        [0, 1, 0],
+        [1, 1, 1],
+        [0, 0, 0]
+    ]
+]
+
+const piezaActual = {
+    position: { x: 7, y: 0 },
+    shape: []
+}
+
+piezaActual.shape =  PIEZAS[Math.floor(Math.random() * PIEZAS.length)]
+
+let contador = 0
+function update() {
     
-    context.fillStyle = "black"
-    context.fillRect(0, 0, canvas.width, canvas.height)
-    for (let fil = 0; fil < COLUMNAS; fil++) {
-        for (let col = 0; col < FILAS; col++) {
-            if (TABLERO[col][fil] === 1) {
-                context.fillStyle = "red"
-                context.fillRect(fil, col, 1, 1)
-            }
-        }
+    contador++;
+    draw()
+    requestAnimationFrame(update)
+    if (contador === 125) {
+        piezaActual.position.y++
+        contador = 0
+    }
+    if (checkColision()) {
+        piezaActual.position.y--
+        pasarTablero()
+        removeFilas()
     }
 
+}
+
+function draw() {
+    context.fillStyle = "black"
+    context.fillRect(0, 0, canvas.width, canvas.height)
+
+    tablero.forEach((fila, y) => {
+        fila.forEach((col, x) => {
+            if (col === 1) {
+                context.fillStyle = "red"
+                context.fillRect(x, y, 1, 1)
+            }
+        })
+    });
     drawPieza()
-    console.log(piezaActual.position)
+    // console.log(piezaActual.position)
+    // console.log(TABLERO)
 }
 
 function drawPieza() {
-    
-    for (let fil = 0; fil < piezaActual.shape.length; fil++) {
-        for (let col = 0; col < piezaActual.shape[fil].length; col++) {
-            if (piezaActual.shape[fil][col] === 1) {
+
+    piezaActual.shape.forEach((fil, y) => {
+        fil.forEach((col, x) => {
+            if (col === 1) {
                 context.fillStyle = "blue"
-                context.fillRect(piezaActual.position.x, piezaActual.position.y, 1, 1)
+                context.fillRect(x + piezaActual.position.x, y + piezaActual.position.y, 1, 1)
             }
-        }
-    }
+        })
+    })
 }
 
 html.addEventListener("keydown", function (event) {
 
-    if (event.key === "ArrowDown") {
-        if (piezaActual.position.y < 28) {
-            piezaActual.position.y++
-        }
+    if (event.key === "ArrowUp") {
+        piezaActual.shape = darVolta()
     }
 
-    if (event.key === "ArrowUp") {
-        if (piezaActual.position.y > 0) {
+
+    if (event.key === "ArrowDown") {
+        piezaActual.position.y++
+        if (checkColision()) {
             piezaActual.position.y--
+            pasarTablero()
+            removeFilas()
         }
     }
 
     if (event.key === "ArrowLeft") {
-        if (PIEZA.position.x > 0) {
-            piezaActual.position.x--
+        // console.log(piezaActual.position.x)
+        // console.log(tablero[piezaActual.position.x][piezaActual.position.y])
+        piezaActual.position.x--
+        if (checkColision()) {
+            piezaActual.position.x++
         }
     }
 
     if (event.key === "ArrowRight") {
-        if (piezaActual.position.x < 14) {
-            piezaActual.position.x++
+        piezaActual.position.x++
+        if (checkColision()) {
+            piezaActual.position.x--
         }
     }
-});
+})
 
-// function caerPieza () {
+function checkColision() {
+    return piezaActual.shape.find((fil, y) => {
+        return fil.find((col, x) => {
+            return (
+                col !== 0 &&
+                tablero[y + piezaActual.position.y]?.[x + piezaActual.position.x] !== 0
+            )
+        })
+    })
+}
 
-//     if (PIEZA.position.y < 28)
-//         PIEZA.position.y++
+function pasarTablero() {
 
-//     if (PIEZA.position.y === 28 ||
-//         TABLERO[PIEZA.position.x][PIEZA.position.y + 1] === 1) {
-//     }
-// }
+    piezaActual.shape.forEach((fil, y) => {
+        fil.forEach((col, x) => {
+            if (col === 1) {
+                tablero[y + piezaActual.position.y][x + piezaActual.position.x] = 1
+            }
+        })
+    });
+
+    piezaActual.position = { x: 7, y: 0 }
+    piezaActual.shape = PIEZAS[Math.floor(Math.random() * PIEZAS.length)]
+
+}
+
+function removeFilas() {
+
+    tablero.forEach((fila, y) => {
+        if (fila.every(col => col === 1)) {
+            tablero.splice(y, 1)
+            tablero.unshift(new Array(COLUMNAS).fill(0))
+        }
+    })
+}
+
+function darVolta () {
+
+    return piezaActual.shape.map((_, i) => piezaActual.shape.map(fila => fila[i]).reverse());
+
+}
+
+update()
