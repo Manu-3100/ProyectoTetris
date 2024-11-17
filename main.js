@@ -137,7 +137,7 @@ function drawPieza() {
 html.addEventListener("keydown", function (event) {
 
     if (event.key === "ArrowUp") {
-        piezaActual.shape = darVolta()
+        piezaActual.shape = darVolta(piezaActual.shape)
     }
 
 
@@ -203,10 +203,23 @@ function removeFilas() {
     })
 }
 
-function darVolta () {
+function darVolta (matriz) {
 
-    return piezaActual.shape.map((_, i) => piezaActual.shape.map(fila => fila[i]).reverse());
+    const nuevaMatriz = []; // Aquí guardaremos la matriz rotada
 
+    // Recorremos las columnas de la matriz original
+    for (let col = 0; col < matriz[0].length; col++) {
+        const nuevaFila = []; // Cada columna se convertirá en una nueva fila
+
+        // Recorremos las filas de la matriz original
+        for (let filas = 0; filas < matriz.length; filas++) {
+            nuevaFila.push(matriz[filas][col]); // Tomamos el elemento de la columna actual
+        }
+
+        // Invertimos la nueva fila para completar la rotación
+        nuevaMatriz.push(nuevaFila.reverse());
+    }
+    return nuevaMatriz
 }
 
 update()
