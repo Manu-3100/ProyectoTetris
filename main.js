@@ -49,14 +49,14 @@ canvas.width = COLUMNAS * TAMAÑOBLOQUE;
 context.scale(TAMAÑOBLOQUE, TAMAÑOBLOQUE);
 
 const colores = {
-    "c": "cyan",
-    "a": "blue",
-    "o": "orange",
-    "r": "red",
-    "y": "yellow",
-    "g": "green",
-    "v": "violet",
-    '0' : "black"
+    "c": "cyan", // linea
+    "b": "blue", // J
+    "o": "orange", // L
+    "r": "red", // Z
+    "y": "yellow", // cuadrado
+    "g": "green", // s
+    "v": "violet", // flecha
+    '0' : "black" // color del tablero
 }
 
 // declaracion de todas las piezas del juego
@@ -115,18 +115,17 @@ function update() {
     requestAnimationFrame(update)
 
     // si el contador llega a 125 la pieza cae
-    if (contador === 40) {
-        piezaActual.position.y++
-        contador = 0
-    } 
-    // si la pieza colisiona con algo la subimos 
-    // y la reposicionamos en el tablero
-    if (checkColision()) {
-        piezaActual.position.y--
-        
-        pasarTablero()
-        removeFilas()
-    }
+    // if (contador === 125) {
+    //     piezaActual.position.y++
+    //     contador = 0
+    // } 
+    // // si la pieza colisiona con algo la subimos 
+    // // y la reposicionamos en el tablero
+    // if (checkColision()) {
+    //     piezaActual.position.y--
+    //     pasarTablero()
+    //     removeFilas()
+    // }
 }
 
 function draw() {
@@ -141,6 +140,8 @@ function draw() {
             }
         })
     });
+    
+
     drawPieza()
 }
 function drawPieza() {
@@ -148,7 +149,8 @@ function drawPieza() {
         fil.forEach((col, x) => {
             if (col !== 0) {
                 context.fillStyle = colores[col]
-                context.fillRect(x + piezaActual.position.x, y + piezaActual.position.y, 1, 1)
+                context.fillRect(x + piezaActual.position.x, y +
+                                    piezaActual.position.y, 1, 1)
             }
         })
     })
@@ -167,9 +169,7 @@ html.addEventListener("keydown", function (event) {
     }
     // si la tecla pulsada es la flecha de abajo la pieza cae
     if (event.key === "ArrowDown") {
-        console.log(piezaActual.position.y)
         piezaActual.position.y++
-        console.log(piezaActual.position.y)
         if (checkColision()) {
             piezaActual.position.y--
             pasarTablero()
@@ -234,7 +234,7 @@ function pasarTablero() {
 // funcion que se encarga de eliminar las filas completas
 function removeFilas() {
     tablero.forEach((fila, y) => {
-        if (fila.every(col => col === colores)) {
+        if (fila.every(col => col !== 0)) {
             // con splice eliminamos la fila completa
             tablero.splice(y, 1)
             // con unshift añadimos una fila nueva al principio
