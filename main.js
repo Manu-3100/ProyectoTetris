@@ -51,47 +51,57 @@ canvas.width = COLUMNAS * TAMAÑOBLOQUE;
 // escala que usa el canvas para dibujar las piezas
 context.scale(TAMAÑOBLOQUE, TAMAÑOBLOQUE);
 
+const colores = {
+    "c": "cyan",
+    "a": "blue",
+    "o": "orange",
+    "r": "red",
+    "y": "yellow",
+    "g": "green",
+    "v": "violet",
+    '0' : "black"
+}
+
 // declaracion de todas las piezas del juego
 const PIEZAS = [
     [ // cuadrado
-        [1, 1],
-        [1, 1]
+        ["y", "y"],
+        ["y", "y"]
     ],
     [
-        [0, 0, 1, 0],
-        [0, 0, 1, 0],
-        [0, 0, 1, 0],
-        [0, 0, 1, 0]
+        ["c", "c", "c", "c"],
     ], // linea
 
-    [ // Z
-        [1, 1, 0],
-        [0, 1, 1],
-        [0, 0, 0]
+    [ // Z,
+        ["r", "r", 0],
+        [0, "r", "r"]
     ],
 
     [ // s
-        [0, 1, 1],
-        [1, 1, 0],
-        [0, 0, 0]
+        [0, "g", "g"],
+        ["g", "g",0],
+        
     ],
 
     [ // L
-        [0, 1, 0],
-        [0, 1, 0],
-        [0, 1, 1]
+        [0, "o", 0],
+        [0, "o", 0],
+        [0, "o", "o"]
     ],
-
+    [ // J
+        [0, "b",0],
+        [0, "b", 0],
+        ["b", "b", 0]
+    ],
     [ // flecha
-        [0, 1, 0],
-        [1, 1, 1],
-        [0, 0, 0]
+        [0, "v", 0],
+        ["v", "v", "v"]
     ]
 ]
 
 // pieza con la que jugamos
 const piezaActual = {
-    position: { x: 7, y: 0 },
+    position: { x: 6, y: 0 },
     shape: []
 }
 // asignamos una pieza aleatoria
@@ -108,7 +118,7 @@ function update() {
     requestAnimationFrame(update)
 
     // si el contador llega a 125 la pieza cae
-    if (contador === 125) {
+    if (contador === 40) {
         piezaActual.position.y++
         contador = 0
     } 
@@ -116,7 +126,7 @@ function update() {
     // y la reposicionamos en el tablero
     if (checkColision()) {
         piezaActual.position.y--
-        // 
+        
         pasarTablero()
         removeFilas()
     }
@@ -128,8 +138,8 @@ function draw() {
 
     tablero.forEach((fila, y) => {
         fila.forEach((col, x) => {
-            if (col === 1) {
-                context.fillStyle = "red"
+            if (col !== 0) {
+                context.fillStyle = colores[col]
                 context.fillRect(x, y, 1, 1)
             }
         })
@@ -141,8 +151,8 @@ function drawPieza() {
 
     piezaActual.shape.forEach((fil, y) => {
         fil.forEach((col, x) => {
-            if (col === 1) {
-                context.fillStyle = "blue"
+            if (col !== 0) {
+                context.fillStyle = colores[col]
                 context.fillRect(x + piezaActual.position.x, y + piezaActual.position.y, 1, 1)
             }
         })
@@ -169,6 +179,7 @@ html.addEventListener("keydown", function (event) {
             pasarTablero()
             removeFilas()
         }
+        console.log(tablero)
     }
     // si la tecla pulsada es la flecha de la izquierda
     if (event.key === "ArrowLeft") {
@@ -188,6 +199,11 @@ html.addEventListener("keydown", function (event) {
     if (event.key === ' ') {
         while (!checkColision()) {
             piezaActual.position.y++
+        }
+        if(checkColision()){
+            piezaActual.position.y--
+            pasarTablero()
+            removeFilas()
         }
     }
 })
@@ -210,9 +226,9 @@ function checkColision() {
 function pasarTablero() {
     piezaActual.shape.forEach((fil, y) => {
         fil.forEach((col, x) => {
-            if (col === 1) {
+            if (col !== 0) {
                 // pintamos en el tablero la posicion de cada pieza que tenga un uno
-                tablero[y + piezaActual.position.y][x + piezaActual.position.x] = 1
+                tablero[y + piezaActual.position.y][x + piezaActual.position.x] = piezaActual.shape[y][x]
             }
         })
     });
@@ -224,7 +240,7 @@ function pasarTablero() {
 // funcion que se encarga de eliminar las filas completas
 function removeFilas() {
     tablero.forEach((fila, y) => {
-        if (fila.every(col => col === 1)) {
+        if (fila.every(col => col === colores)) {
             // con splice eliminamos la fila completa
             tablero.splice(y, 1)
             // con unshift añadimos una fila nueva al principio
