@@ -1,16 +1,13 @@
 // Autor: Manuel Fernández
-
 // etiquetas del html
 const html = document.querySelector("html");
 const canvas = document.querySelector("canvas");
 // como va a dibujar el canvas
 const context = canvas.getContext("2d");
-
 // constantes del juego
 const TAMAÑOBLOQUE = 20
 const FILAS = 30
 const COLUMNAS = 16
-
 // tablero de juego
 const tablero = [
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -116,7 +113,6 @@ function update() {
     // y la reposicionamos en el tablero
     if (checkColision()) {
         piezaActual.position.y--
-        // 
         pasarTablero()
         removeFilas()
     }
@@ -136,9 +132,7 @@ function draw() {
     });
     drawPieza()
 }
-
 function drawPieza() {
-
     piezaActual.shape.forEach((fil, y) => {
         fil.forEach((col, x) => {
             if (col === 1) {
@@ -148,7 +142,6 @@ function drawPieza() {
         })
     })
 }
-
 html.addEventListener("keydown", function (event) {
 
     // las comprobaciones se hacen en el siguiente orden
@@ -163,7 +156,9 @@ html.addEventListener("keydown", function (event) {
     }
     // si la tecla pulsada es la flecha de abajo la pieza cae
     if (event.key === "ArrowDown") {
+        console.log(piezaActual.position.y)
         piezaActual.position.y++
+        console.log(piezaActual.position.y)
         if (checkColision()) {
             piezaActual.position.y--
             pasarTablero()
@@ -191,7 +186,6 @@ html.addEventListener("keydown", function (event) {
         }
     }
 })
-
 // funcion que se encarga de comprobar si la pieza colisiona con algo
 function checkColision() {
     return piezaActual.shape.find((fil, y) => {
@@ -220,7 +214,6 @@ function pasarTablero() {
     piezaActual.position = { x: 7, y: 0 }
     piezaActual.shape = PIEZAS[Math.floor(Math.random() * PIEZAS.length)]
 }
-
 // funcion que se encarga de eliminar las filas completas
 function removeFilas() {
     tablero.forEach((fila, y) => {
@@ -235,11 +228,9 @@ function removeFilas() {
 // funcion que se encarga de dar la vuelta a la pieza
 function darVolta (matriz) {
     const nuevaMatriz = []; // Aquí guardaremos la matriz rotada
-
     // Recorremos las columnas de la matriz original
     for (let col = 0; col < matriz[0].length; col++) {
         const nuevaFila = []; // Cada columna se convertirá en una nueva fila
-
         // Recorremos las filas de la matriz original
         for (let filas = 0; filas < matriz.length; filas++) {
             // Tomamos el elemento de la columna actual y lo añadimos a la nueva fila
