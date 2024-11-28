@@ -240,7 +240,7 @@ function pasarTablero() {
 // funcion que se encarga de eliminar las filas completas
 function removeFilas() {
     tablero.forEach((fila, y) => {
-        if (fila.every(col => col === colores)) {
+        if (fila.every(col => col !== 0 && Object.keys(colores).includes(col))) {
             // con splice eliminamos la fila completa
             tablero.splice(y, 1)
             // con unshift añadimos una fila nueva al principio
