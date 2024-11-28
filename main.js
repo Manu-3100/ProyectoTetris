@@ -1,16 +1,13 @@
 // Autor: Manuel Fernández
-
 // etiquetas del html
 const html = document.querySelector("html");
 const canvas = document.querySelector("canvas");
 // como va a dibujar el canvas
 const context = canvas.getContext("2d");
-
 // constantes del juego
 const TAMAÑOBLOQUE = 20
 const FILAS = 30
 const COLUMNAS = 16
-
 // tablero de juego
 const tablero = [
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -52,14 +49,14 @@ canvas.width = COLUMNAS * TAMAÑOBLOQUE;
 context.scale(TAMAÑOBLOQUE, TAMAÑOBLOQUE);
 
 const colores = {
-    "c": "cyan",
-    "a": "blue",
-    "o": "orange",
-    "r": "red",
-    "y": "yellow",
-    "g": "green",
-    "v": "violet",
-    '0' : "black"
+    "c": "cyan", // linea
+    "b": "blue", // J
+    "o": "orange", // L
+    "r": "red", // Z
+    "y": "yellow", // cuadrado
+    "g": "green", // s
+    "v": "violet", // flecha
+    '0' : "black" // color del tablero
 }
 
 // declaracion de todas las piezas del juego
@@ -118,18 +115,17 @@ function update() {
     requestAnimationFrame(update)
 
     // si el contador llega a 125 la pieza cae
-    if (contador === 40) {
-        piezaActual.position.y++
-        contador = 0
-    } 
-    // si la pieza colisiona con algo la subimos 
-    // y la reposicionamos en el tablero
-    if (checkColision()) {
-        piezaActual.position.y--
-        
-        pasarTablero()
-        removeFilas()
-    }
+    // if (contador === 125) {
+    //     piezaActual.position.y++
+    //     contador = 0
+    // } 
+    // // si la pieza colisiona con algo la subimos 
+    // // y la reposicionamos en el tablero
+    // if (checkColision()) {
+    //     piezaActual.position.y--
+    //     pasarTablero()
+    //     removeFilas()
+    // }
 }
 
 function draw() {
@@ -144,21 +140,21 @@ function draw() {
             }
         })
     });
+    
+
     drawPieza()
 }
-
 function drawPieza() {
-
     piezaActual.shape.forEach((fil, y) => {
         fil.forEach((col, x) => {
             if (col !== 0) {
                 context.fillStyle = colores[col]
-                context.fillRect(x + piezaActual.position.x, y + piezaActual.position.y, 1, 1)
+                context.fillRect(x + piezaActual.position.x, y +
+                                    piezaActual.position.y, 1, 1)
             }
         })
     })
 }
-
 html.addEventListener("keydown", function (event) {
 
     // las comprobaciones se hacen en el siguiente orden
@@ -207,7 +203,6 @@ html.addEventListener("keydown", function (event) {
         }
     }
 })
-
 // funcion que se encarga de comprobar si la pieza colisiona con algo
 function checkColision() {
     return piezaActual.shape.find((fil, y) => {
@@ -236,11 +231,10 @@ function pasarTablero() {
     piezaActual.position = { x: 7, y: 0 }
     piezaActual.shape = PIEZAS[Math.floor(Math.random() * PIEZAS.length)]
 }
-
 // funcion que se encarga de eliminar las filas completas
 function removeFilas() {
     tablero.forEach((fila, y) => {
-        if (fila.every(col => col !== 0 && Object.keys(colores).includes(col))) {
+        if (fila.every(col => col !== 0)) {
             // con splice eliminamos la fila completa
             tablero.splice(y, 1)
             // con unshift añadimos una fila nueva al principio
@@ -251,11 +245,9 @@ function removeFilas() {
 // funcion que se encarga de dar la vuelta a la pieza
 function darVolta (matriz) {
     const nuevaMatriz = []; // Aquí guardaremos la matriz rotada
-
     // Recorremos las columnas de la matriz original
     for (let col = 0; col < matriz[0].length; col++) {
         const nuevaFila = []; // Cada columna se convertirá en una nueva fila
-
         // Recorremos las filas de la matriz original
         for (let filas = 0; filas < matriz.length; filas++) {
             // Tomamos el elemento de la columna actual y lo añadimos a la nueva fila
