@@ -2,6 +2,7 @@
 // etiquetas del html
 const html = document.querySelector("html");
 const canvas = document.querySelector("canvas");
+const btiniciar = document.getElementById("iniciar");
 // como va a dibujar el canvas
 const context = canvas.getContext("2d");
 // constantes del juego
@@ -56,7 +57,7 @@ const colores = {
     "y": "yellow", // cuadrado
     "g": "green", // s
     "v": "violet", // flecha
-    '0' : "black" // color del tablero
+    '0': "black" // color del tablero
 }
 
 // declaracion de todas las piezas del juego
@@ -76,8 +77,8 @@ const PIEZAS = [
 
     [ // s
         [0, "g", "g"],
-        ["g", "g",0],
-        
+        ["g", "g", 0],
+
     ],
 
     [ // L
@@ -86,7 +87,7 @@ const PIEZAS = [
         [0, "o", "o"]
     ],
     [ // J
-        [0, "b",0],
+        [0, "b", 0],
         [0, "b", 0],
         ["b", "b", 0]
     ],
@@ -102,161 +103,169 @@ const piezaActual = {
     shape: []
 }
 // asignamos una pieza aleatoria
-piezaActual.shape =  PIEZAS[Math.floor(Math.random() * PIEZAS.length)]
+piezaActual.shape = PIEZAS[Math.floor(Math.random() * PIEZAS.length)]
 
 // funcion que se encarga de actualizar el juego
 let contador = 0
-function update() {    
-    // contador para la caida de la pieza
-    contador++;
-    // dibujo del juego
-    draw()
-    // llamada recursiva para actualizar el juego
-    requestAnimationFrame(update)
 
-    // si el contador llega a 125 la pieza cae
-    // if (contador === 125) {
-    //     piezaActual.position.y++
-    //     contador = 0
-    // } 
-    // // si la pieza colisiona con algo la subimos 
-    // // y la reposicionamos en el tablero
-    // if (checkColision()) {
-    //     piezaActual.position.y--
-    //     pasarTablero()
-    //     removeFilas()
-    // }
-}
+document.addEventListener("DOMContentLoaded", function () {
+    function update() {
+        // contador para la caida de la pieza
+        contador++;
+        // dibujo del juego
+        draw()
+        // llamada recursiva para actualizar el juego
+        requestAnimationFrame(update)
 
-function draw() {
-    context.fillStyle = "black"
-    context.fillRect(0, 0, canvas.width, canvas.height)
-
-    tablero.forEach((fila, y) => {
-        fila.forEach((col, x) => {
-            if (col !== 0) {
-                context.fillStyle = colores[col]
-                context.fillRect(x, y, 1, 1)
-            }
-        })
-    });
-    
-
-    drawPieza()
-}
-function drawPieza() {
-    piezaActual.shape.forEach((fil, y) => {
-        fil.forEach((col, x) => {
-            if (col !== 0) {
-                context.fillStyle = colores[col]
-                context.fillRect(x + piezaActual.position.x, y +
-                                    piezaActual.position.y, 1, 1)
-            }
-        })
-    })
-}
-html.addEventListener("keydown", function (event) {
-
-    // las comprobaciones se hacen en el siguiente orden
-    // -> se avanza la posición de la pieza
-    // -> se comprueba si el valor es correcto
-    // -> si el valor no es correcto se retrocede la posición de la pieza
-
-    // si la tecla pulsada es la flecha de arriba 
-    if (event.key === "ArrowUp") {
-        // se da la vuelta a la pieza
-        piezaActual.shape = darVolta(piezaActual.shape)
-    }
-    // si la tecla pulsada es la flecha de abajo la pieza cae
-    if (event.key === "ArrowDown") {
-        piezaActual.position.y++
-        if (checkColision()) {
-            piezaActual.position.y--
-            pasarTablero()
-            removeFilas()
-        }
-        console.log(tablero)
-    }
-    // si la tecla pulsada es la flecha de la izquierda
-    if (event.key === "ArrowLeft") {
-        piezaActual.position.x--
-        if (checkColision()) {
-            piezaActual.position.x++
-        }
-    }
-    // si la tecla pulsada es la flecha de la derecha
-    if (event.key === "ArrowRight") {
-        piezaActual.position.x++
-        if (checkColision()) {
-            piezaActual.position.x--
-        }
-    }
-    // si la tecla pulsada es la barra espaciadora
-    if (event.key === ' ') {
-        while (!checkColision()) {
+        // si el contador llega a 125 la pieza cae
+        if (contador === 125) {
             piezaActual.position.y++
-        }
-        if(checkColision()){
+            contador = 0
+        } 
+        // si la pieza colisiona con algo la subimos 
+        // y la reposicionamos en el tablero
+        if (checkColision()) {
             piezaActual.position.y--
             pasarTablero()
             removeFilas()
         }
     }
-})
-// funcion que se encarga de comprobar si la pieza colisiona con algo
-function checkColision() {
-    return piezaActual.shape.find((fil, y) => {
-        return fil.find((col, x) => {
-            return (
-                // si la pieza colisiona con el suelo o con los lados
-                // es diferente de 0 porque si esta fuera de los lados es Undefined
-                // el operador ?. sirve para comprobar primero una cosa y luego otra si la primera es true
-                col !== 0 &&
-                tablero[y + piezaActual.position.y]?.[x + piezaActual.position.x] !== 0
-            )
+
+    function draw() {
+        context.fillStyle = "black"
+        context.fillRect(0, 0, canvas.width, canvas.height)
+
+        tablero.forEach((fila, y) => {
+            fila.forEach((col, x) => {
+                if (col !== 0) {
+                    context.fillStyle = colores[col]
+                    context.fillRect(x, y, 1, 1)
+                }
+            })
+        });
+
+
+        drawPieza()
+    }
+    function drawPieza() {
+        piezaActual.shape.forEach((fil, y) => {
+            fil.forEach((col, x) => {
+                if (col !== 0) {
+                    context.fillStyle = colores[col]
+                    context.fillRect(x + piezaActual.position.x, y +
+                        piezaActual.position.y, 1, 1)
+                }
+            })
         })
+    }
+    html.addEventListener("keydown", function (event) {
+
+        // las comprobaciones se hacen en el siguiente orden
+        // -> se avanza la posición de la pieza
+        // -> se comprueba si el valor es correcto
+        // -> si el valor no es correcto se retrocede la posición de la pieza
+
+        // si la tecla pulsada es la flecha de arriba 
+        if (event.key === "ArrowUp") {
+            // se da la vuelta a la pieza
+            piezaActual.shape = darVolta(piezaActual.shape)
+        }
+        // si la tecla pulsada es la flecha de abajo la pieza cae
+        if (event.key === "ArrowDown") {
+            piezaActual.position.y++
+            if (checkColision()) {
+                piezaActual.position.y--
+                pasarTablero()
+                removeFilas()
+            }
+            console.log(tablero)
+        }
+        // si la tecla pulsada es la flecha de la izquierda
+        if (event.key === "ArrowLeft") {
+            piezaActual.position.x--
+            if (checkColision()) {
+                piezaActual.position.x++
+            }
+        }
+        // si la tecla pulsada es la flecha de la derecha
+        if (event.key === "ArrowRight") {
+            piezaActual.position.x++
+            if (checkColision()) {
+                piezaActual.position.x--
+            }
+        }
+        // si la tecla pulsada es la barra espaciadora
+        if (event.key === ' ') {
+            while (!checkColision()) {
+                piezaActual.position.y++
+            }
+            if (checkColision()) {
+                piezaActual.position.y--
+                pasarTablero()
+                removeFilas()
+            }
+        }
     })
-}
-// funcion que se encarga de pasar la pieza al tablero
-function pasarTablero() {
-    piezaActual.shape.forEach((fil, y) => {
-        fil.forEach((col, x) => {
-            if (col !== 0) {
-                // pintamos en el tablero la posicion de cada pieza que tenga un uno
-                tablero[y + piezaActual.position.y][x + piezaActual.position.x] = piezaActual.shape[y][x]
+    // funcion que se encarga de comprobar si la pieza colisiona con algo
+    function checkColision() {
+        return piezaActual.shape.find((fil, y) => {
+            return fil.find((col, x) => {
+                return (
+                    // si la pieza colisiona con el suelo o con los lados
+                    // es diferente de 0 porque si esta fuera de los lados es Undefined
+                    // el operador ?. sirve para comprobar primero una cosa y luego otra si la primera es true
+                    col !== 0 &&
+                    tablero[y + piezaActual.position.y]?.[x + piezaActual.position.x] !== 0
+                )
+            })
+        })
+    }
+    // funcion que se encarga de pasar la pieza al tablero
+    function pasarTablero() {
+        piezaActual.shape.forEach((fil, y) => {
+            fil.forEach((col, x) => {
+                if (col !== 0) {
+                    // pintamos en el tablero la posicion de cada pieza que tenga un uno
+                    tablero[y + piezaActual.position.y][x + piezaActual.position.x] = piezaActual.shape[y][x]
+                }
+            })
+        });
+        // creacion de una nueva pieza
+        piezaActual.position = { x: 7, y: 0 }
+        piezaActual.shape = PIEZAS[Math.floor(Math.random() * PIEZAS.length)]
+    }
+    // funcion que se encarga de eliminar las filas completas
+    function removeFilas() {
+        tablero.forEach((fila, y) => {
+            if (fila.every(col => col !== 0)) {
+                // con splice eliminamos la fila completa
+                tablero.splice(y, 1)
+                // con unshift añadimos una fila nueva al principio
+                tablero.unshift(new Array(COLUMNAS).fill(0))
             }
         })
-    });
-    // creacion de una nueva pieza
-    piezaActual.position = { x: 7, y: 0 }
-    piezaActual.shape = PIEZAS[Math.floor(Math.random() * PIEZAS.length)]
-}
-// funcion que se encarga de eliminar las filas completas
-function removeFilas() {
-    tablero.forEach((fila, y) => {
-        if (fila.every(col => col !== 0)) {
-            // con splice eliminamos la fila completa
-            tablero.splice(y, 1)
-            // con unshift añadimos una fila nueva al principio
-            tablero.unshift(new Array(COLUMNAS).fill(0))
-        }
-    })
-}
-// funcion que se encarga de dar la vuelta a la pieza
-function darVolta (matriz) {
-    const nuevaMatriz = []; // Aquí guardaremos la matriz rotada
-    // Recorremos las columnas de la matriz original
-    for (let col = 0; col < matriz[0].length; col++) {
-        const nuevaFila = []; // Cada columna se convertirá en una nueva fila
-        // Recorremos las filas de la matriz original
-        for (let filas = 0; filas < matriz.length; filas++) {
-            // Tomamos el elemento de la columna actual y lo añadimos a la nueva fila
-            nuevaFila.push(matriz[filas][col]); 
-        }
-        // Invertimos la nueva fila para completar la rotación
-        nuevaMatriz.push(nuevaFila.reverse());
     }
-    return nuevaMatriz
-}
-// llamada a la funcion update para iniciar el juego
-update()
+    // funcion que se encarga de dar la vuelta a la pieza
+    function darVolta(matriz) {
+        const nuevaMatriz = []; // Aquí guardaremos la matriz rotada
+        // Recorremos las columnas de la matriz original
+        for (let col = 0; col < matriz[0].length; col++) {
+            const nuevaFila = []; // Cada columna se convertirá en una nueva fila
+            // Recorremos las filas de la matriz original
+            for (let filas = 0; filas < matriz.length; filas++) {
+                // Tomamos el elemento de la columna actual y lo añadimos a la nueva fila
+                nuevaFila.push(matriz[filas][col]);
+            }
+            // Invertimos la nueva fila para completar la rotación
+            nuevaMatriz.push(nuevaFila.reverse());
+        }
+        return nuevaMatriz
+    }
+    // llamada a la funcion update para iniciar el juego
+
+
+    btiniciar.addEventListener("click", function () {
+        update()
+    })
+
+})

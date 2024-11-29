@@ -5,3 +5,15 @@ body {
     padding: 0;
     margin-top: 12vh;
 }
+
+.visible{
+
+}
+
+.invisible{
+    display: none;
+}
+
+.inicio{
+    
+}
